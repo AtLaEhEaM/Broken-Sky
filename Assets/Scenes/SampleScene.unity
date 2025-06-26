@@ -708,17 +708,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 5
-  jumpPower: 5
+  jumpPower: 12
   maxJumpHeight: 2
-  hangTime: 0.2
-  fallBackDuration: 0.5
+  coyoteTime: 0.1
+  lowGravityMultiplier: 1.5
+  highGravityMultiplier: 2.5
   canDoubleJump: 1
   groundCheckPoint: {fileID: 313803937}
   groundCheckRadius: 0.2
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
-  isJumping: 0
 --- !u!143 &1772011559
 CharacterController:
   m_ObjectHideFlags: 0

@@ -9,9 +9,15 @@ public class PolishedMovement : MonoBehaviour
     [Header("Jump Settings")]
     public float jumpPower = 5f;
     public float maxJumpHeight = 2f;
-    public float hangTime = 0.15f;
-    public float fallBackDuration = 0.5f;
 
+    [Header("Timing")]
+    public float coyoteTime = 0.15f;
+
+    [Header("Gravity Multipliers")]
+    public float lowGravityMultiplier = 1.5f;
+    public float highGravityMultiplier = 2.5f;
+
+    [Header("Double Jump")]
     public bool canDoubleJump = false;
 
     [Header("Ground Check")]
@@ -19,19 +25,13 @@ public class PolishedMovement : MonoBehaviour
     public float groundCheckRadius = 0.2f;
     public LayerMask groundLayer;
 
-    [Header("Additional Jump Settings")]
-    public float coyoteTime = 0.1f;
-    public float lowGravityMultiplier = 1.5f;
-    public float highGravityMultiplier = 2.5f;
-
     private bool hasDoubleJumped = false;
+    private bool isJumping = false;
+
     private float velocityY = 0f;
     private float gravity = -9.81f;
 
-    private float hangTimeCounter = 0f;
     private float coyoteTimeCounter = 0f;
-
-    private bool isJumping = false;
     private float initialJumpY;
 
     private CharacterController controller;
@@ -44,9 +44,7 @@ public class PolishedMovement : MonoBehaviour
     void Update()
     {
         // Movement
-        float inputX = 0f;
-        float inputZ = 0f;
-
+        float inputX = 0f, inputZ = 0f;
         if (Input.GetKey(KeyCode.W)) inputZ = 1f;
         if (Input.GetKey(KeyCode.S)) inputZ = -1f;
         if (Input.GetKey(KeyCode.A)) inputX = -1f;
@@ -61,46 +59,36 @@ public class PolishedMovement : MonoBehaviour
         if (isGrounded)
         {
             velocityY = -1f;
-            hangTimeCounter = hangTime;
             coyoteTimeCounter = coyoteTime;
             hasDoubleJumped = false;
             isJumping = false;
         }
         else
         {
-            hangTimeCounter -= Time.deltaTime;
             coyoteTimeCounter -= Time.deltaTime;
         }
 
         // Jump Logic
-        if (Input.GetKeyDown(KeyCode.Space) && (isGrounded || hangTimeCounter > 0 || coyoteTimeCounter > 0 || (canDoubleJump && !hasDoubleJumped)))
+        if (Input.GetKeyDown(KeyCode.Space) && (isGrounded || coyoteTimeCounter > 0f || (canDoubleJump && !hasDoubleJumped)))
         {
             velocityY = jumpPower;
             isJumping = true;
             initialJumpY = transform.position.y;
 
-            if (!isGrounded && canDoubleJump)
-                hasDoubleJumped = true;
+            if (!isGrounded && canDoubleJump) hasDoubleJumped = true;
 
             coyoteTimeCounter = 0f;
         }
 
-        // Variable Jump Logic
+        // Variable Jump
         if (Input.GetKey(KeyCode.Space) && isJumping && velocityY > 0f)
         {
             float currentHeight = transform.position.y - initialJumpY;
 
-            if (currentHeight < maxJumpHeight)
-            {
-                velocityY = Mathf.Lerp(velocityY, jumpPower, Time.deltaTime / fallBackDuration);
-            }
-            else
-            {
-                isJumping = false;
-            }
+            if (currentHeight >= maxJumpHeight) isJumping = false;
         }
 
-        // Variable Gravity
+        // Apply Variable Gravity
         if (velocityY > 0 && !Input.GetKey(KeyCode.Space))
         {
             velocityY += gravity * lowGravityMultiplier * Time.deltaTime;
