@@ -25,14 +25,14 @@ public class PolishedMovement : MonoBehaviour
     public float groundCheckRadius = 0.2f;
     public LayerMask groundLayer;
 
-    public bool hasDoubleJumped = false;
-    public bool isJumping = false;
+    [Header("References")]
+    public Transform cameraTransform;
 
+    private bool hasDoubleJumped = false;
+    private bool isJumping = false;
     private float velocityY = 0f;
     private float gravity = -9.81f;
-
-    public float coyoteTimeCounter = 0f;
-    public bool canJump = true;
+    private float coyoteTimeCounter = 0f;
     private float initialJumpY;
 
     private CharacterController controller;
@@ -44,15 +44,26 @@ public class PolishedMovement : MonoBehaviour
 
     void Update()
     {
-        // Movement
+        // Input
         float inputX = 0f, inputZ = 0f;
         if (Input.GetKey(KeyCode.W)) inputZ = 1f;
         if (Input.GetKey(KeyCode.S)) inputZ = -1f;
         if (Input.GetKey(KeyCode.A)) inputX = -1f;
         if (Input.GetKey(KeyCode.D)) inputX = 1f;
 
-        Vector3 move = new Vector3(inputX, 0, inputZ);
-        controller.Move(move * moveSpeed * Time.deltaTime);
+        Vector3 inputDir = new Vector3(inputX, 0, inputZ).normalized;
+
+        // Movement relative to camera
+        Vector3 camForward = cameraTransform.forward;
+        Vector3 camRight = cameraTransform.right;
+        camForward.y = 0f;
+        camRight.y = 0f;
+        camForward.Normalize();
+        camRight.Normalize();
+
+        Vector3 moveDir = (camForward * inputDir.z + camRight * inputDir.x).normalized;
+
+        controller.Move(moveDir * moveSpeed * Time.deltaTime);
 
         // Ground Check
         bool isGrounded = Physics.CheckSphere(groundCheckPoint.position, groundCheckRadius, groundLayer);
@@ -63,7 +74,6 @@ public class PolishedMovement : MonoBehaviour
             coyoteTimeCounter = coyoteTime;
             hasDoubleJumped = false;
             isJumping = false;
-            canJump = true;
         }
         else
         {
@@ -77,18 +87,18 @@ public class PolishedMovement : MonoBehaviour
             isJumping = true;
             initialJumpY = transform.position.y;
 
-            if (!isGrounded && canDoubleJump) hasDoubleJumped = true;
-            canJump = false;
+            if (!isGrounded && canDoubleJump)
+                hasDoubleJumped = true;
 
             coyoteTimeCounter = 0f;
         }
 
-        // Variable Jump
+        // Variable Jump Height
         if (Input.GetKey(KeyCode.Space) && isJumping && velocityY > 0f)
         {
             float currentHeight = transform.position.y - initialJumpY;
-
-            if (currentHeight >= maxJumpHeight) isJumping = false;
+            if (currentHeight >= maxJumpHeight)
+                isJumping = false;
         }
 
         // Apply Variable Gravity
@@ -101,7 +111,7 @@ public class PolishedMovement : MonoBehaviour
             velocityY += gravity * highGravityMultiplier * Time.deltaTime;
         }
 
-        // Final Movement
+        // Apply vertical movement
         controller.Move(Vector3.up * velocityY * Time.deltaTime);
     }
 

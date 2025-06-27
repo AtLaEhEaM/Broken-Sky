@@ -1,17 +1,33 @@
 using UnityEngine;
 
-public class MaterialReplacer : MonoBehaviour
+public class AssignMaterialAndBoxCollider : MonoBehaviour
 {
     public Material[] materials;
+    public bool addmat = false;
 
     void Start()
     {
-        foreach (Transform child in transform)
+        if (materials.Length == 0) return;
+
+        Renderer[] renderers = GetComponentsInChildren<Renderer>();
+
+        foreach (Renderer rend in renderers)
         {
-            Renderer rend = child.GetComponent<Renderer>();
-            if (rend != null && materials.Length > 0)
+            if (rend != null && rend.sharedMaterial != null)
             {
-                rend.material = materials[Random.Range(0, materials.Length)];
+                GameObject obj = rend.gameObject;
+                if (addmat)
+                {
+                    rend.material = materials[Random.Range(0, materials.Length)];
+                }
+                if (obj.GetComponent<Collider>() == null)
+                {
+                    if (addmat)
+                        obj.AddComponent<BoxCollider>();
+                    else
+                        obj.AddComponent<MeshCollider>();
+                }
+                obj.layer = 3;
             }
         }
     }
