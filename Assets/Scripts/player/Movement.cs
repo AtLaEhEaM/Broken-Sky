@@ -25,13 +25,14 @@ public class PolishedMovement : MonoBehaviour
     public float groundCheckRadius = 0.2f;
     public LayerMask groundLayer;
 
-    private bool hasDoubleJumped = false;
-    private bool isJumping = false;
+    public bool hasDoubleJumped = false;
+    public bool isJumping = false;
 
     private float velocityY = 0f;
     private float gravity = -9.81f;
 
-    private float coyoteTimeCounter = 0f;
+    public float coyoteTimeCounter = 0f;
+    public bool canJump = true;
     private float initialJumpY;
 
     private CharacterController controller;
@@ -62,6 +63,7 @@ public class PolishedMovement : MonoBehaviour
             coyoteTimeCounter = coyoteTime;
             hasDoubleJumped = false;
             isJumping = false;
+            canJump = true;
         }
         else
         {
@@ -76,6 +78,7 @@ public class PolishedMovement : MonoBehaviour
             initialJumpY = transform.position.y;
 
             if (!isGrounded && canDoubleJump) hasDoubleJumped = true;
+            canJump = false;
 
             coyoteTimeCounter = 0f;
         }
