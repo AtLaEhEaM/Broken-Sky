@@ -4,7 +4,7 @@ public class AssignMaterialAndBoxCollider : MonoBehaviour
 {
     public Material[] materials;
     public bool addmat = false;
-
+    private BreakablePlatforms breakablePlatforms;
     void Start()
     {
         if (materials.Length == 0) return;
@@ -23,7 +23,14 @@ public class AssignMaterialAndBoxCollider : MonoBehaviour
                 if (obj.GetComponent<Collider>() == null)
                 {
                     if (addmat)
+                    {
                         obj.AddComponent<BoxCollider>();
+                        int chance = Random.Range(0, 100);
+                        if(chance <= 10)
+                        {
+                            obj.AddComponent<BreakablePlatforms>();
+                        }
+                    }
                     else
                         obj.AddComponent<MeshCollider>();
                 }

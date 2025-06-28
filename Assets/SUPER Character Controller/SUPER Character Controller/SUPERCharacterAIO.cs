@@ -21,7 +21,9 @@ using UnityEngine.InputSystem.Interactions;
 namespace SUPERCharacter{
 [RequireComponent(typeof(Rigidbody)), RequireComponent(typeof(CapsuleCollider))][AddComponentMenu("SUPER Character/SUPER Character Controller")]
 public class SUPERCharacterAIO : MonoBehaviour{
-    #region Variables
+        #region Variables
+
+        public GameObject test;
 
     public bool controllerPaused = false;
 
