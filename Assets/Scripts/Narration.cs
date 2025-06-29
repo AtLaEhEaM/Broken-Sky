@@ -7,8 +7,15 @@ public class NarrationTrigger : MonoBehaviour
     public bool checkpoint = false;
     public Vector3 point;
     public Transform checkpointloc;
+    public bool allowdoublejump = false;
+    private SimpleCharacterControllers characterControllers;
 
-     private void OnTriggerEnter(Collider other)
+    private void Start()
+    {
+        characterControllers = FindObjectOfType<SimpleCharacterControllers>();
+    }
+
+    private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player") && narrationClip != null && audioSource != null)
         {
@@ -17,6 +24,7 @@ public class NarrationTrigger : MonoBehaviour
             {
                 checkpointloc.localPosition = point;
             }
+            if(allowdoublejump) characterControllers.canDoubleJump = true;
             Destroy(this);
         }
     }

@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using SUPERCharacter;
+
 
 [RequireComponent(typeof(Collider))]
-public class CollectableGem : MonoBehaviour, ICollectable
+public class CollectableGem : MonoBehaviour
 {
     public UnityEvent OnCollect;
     Vector3 startPos;
